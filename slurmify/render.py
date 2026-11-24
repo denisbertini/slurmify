@@ -24,7 +24,7 @@ TEMPLATE = """#!/bin/bash
 #   deck           : {deck}
 #   grid           : {nx} x {ny} x {nz}   dt = {dt:.3e} s -> {steps} steps
 #   particles      : {npcounts}
-#   volume         : {total_tb:.1f} TB total, worst file {biggest_gib:.1f} GiB
+#   volume         : {total_human} total, worst file {biggest_gib:.1f} GiB
 #   model          : {rate:.2e} cell-upd/s/core (particles/cell = {npc:.1f}),
 #                    imbalance x{imbalance}, I/O mode {io_mode}
 #   predicted wall : {wall}   cost {node_hours:.1f} node-hours
@@ -74,7 +74,7 @@ def render(spec: WorkloadSpec, machine: dict, vol: Volume, cand: Candidate,
         mail_user=sched.get("mail_user", ""),
         deck=spec.deck, nx=spec.nx, ny=spec.ny, nz=spec.nz,
         dt=spec.dt, steps=spec.steps, npcounts=counts,
-        total_tb=vol.total_tb, biggest_gib=vol.dumps_max_stall_inputs /
+        total_human=vol.total_human(), biggest_gib=vol.dumps_max_stall_inputs /
         (1024.0 ** 3),
         rate=effective_rate(spec, fill, cal), npc=npc,
         imbalance=cal.get("imbalance", 1.25), io_mode=cand.io_mode,

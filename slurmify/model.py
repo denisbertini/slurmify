@@ -46,10 +46,22 @@ class Volume:
     per_block: dict[str, dict]            # block -> {bytes_file, dumps}
     total_bytes: float
     dumps_max_stall_inputs: float         # largest single-file bytes
+    sim_bytes: float = 0.0                # modelled in-simulation footprint
+    rate: float = 0.0                     # cell-upd/s/core used for planning
 
     @property
     def total_tb(self) -> float:
         return self.total_bytes / 1e12
+
+    def total_human(self) -> str:
+        return human_bytes(self.total_bytes)
+
+
+def human_bytes(b: float) -> str:
+    for unit, div in (("TB", 1e12), ("GB", 1e9), ("MB", 1e6), ("kB", 1e3)):
+        if b >= div:
+            return f"{b / div:.1f} {unit}"
+    return f"{b:.0f} B"
 
 
 def volume_of(spec: WorkloadSpec, fill: float, cal: dict) -> Volume:
@@ -220,4 +232,6 @@ def plan(spec: WorkloadSpec, machine: dict, *, fill: float = 0.5,
         cands.append(cand)
 
     cands.sort(key=lambda c: c.wall_s)
+    vol.sim_bytes = sim_bytes
+    vol.rate = rate
     return vol, cands

@@ -25,7 +25,7 @@ import sys
 
 from . import registry
 from .epoch import EpochDeck
-from .model import DEFAULT_CAL, fmt_dur, plan
+from .model import DEFAULT_CAL, fmt_dur, human_bytes, plan
 from .render import render
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -66,7 +66,7 @@ def cmd_analyze(args) -> int:
         print(f"output '{ob.name}': {len(ob.field_vars)} fields, "
               f"part-vars {ob.particle_vars or '-'}, "
               f"{bf / 2**30:.2f} GiB/file x {ob.n_dumps} dumps")
-    print(f"total volume: {total / 1e12:.2f} TB")
+    print(f"total volume: {human_bytes(total)}")
     for n in spec.notes:
         print(f"note        : {n}")
     return 0
@@ -84,7 +84,7 @@ def cmd_plan(args) -> int:
     npc = sum(vol.counts.values()) / max(cells, 1.0)
     print(f"== {os.path.basename(spec.deck)} on {machine['name']} ==")
     print(f"{int(spec.steps):,} steps, {npc:.1f} particles/cell, "
-          f"{vol.total_tb:.1f} TB to write\n")
+          f"{vol.total_human()} to write\n")
     feas = [c for c in cands if c.feasible]
     if not feas:
         print("NO feasible configuration within the searched space; "
@@ -118,10 +118,8 @@ def cmd_plan(args) -> int:
             "predict": {"nodes": best.nodes,
                         "tasks_per_node": best.tasks_per_node,
                         "cells": cells, "npc": npc,
-                        "sim_bytes": int(cells * DEFAULT_CAL[
-                            "field_bytes_per_cell"]
-                            + sum(vol.counts.values())
-                            * DEFAULT_CAL["bytes_per_particle"]),
+                        "sim_bytes": int(vol.sim_bytes),
+                        "rate_model": vol.rate,
                         "wall_s": best.wall_s,
                         "mem_rank_mib": best.mem_rank_mib},
             "emitted": os.path.abspath(args.emit),
