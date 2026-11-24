@@ -1,0 +1,40 @@
+{
+  "name": "LRZ Orion (user pattern)",
+  "cores_per_node": 128,
+  "mem_per_node_mb": 256000,
+  "task_ladder": [16, 32, 64],
+  "default_tasks_per_node": 32,
+  "fs": {
+    "read_gbs_per_rank": 0.30,
+    "write_gbs_per_rank": 0.24,
+    "note": "per-rank Lustre rates under load (bbstage docs measurements)"
+  },
+  "nvme": {
+    "write_gbs": 4.0,
+    "free_gb": 1200,
+    "note": "node-local /tmp, per-node ceiling shared by all ranks"
+  },
+  "has_bbstage": true,
+  "scheduler": {
+    "partition_default": "long",
+    "partition_debug": "debug",
+    "mail_user": "d.bertini@gsi.de",
+    "sif": "/lustre/rz/dbertini/orion/containers/pp/rlx9_ompi_ucx.sif",
+    "epoch_bin": "epoch3d",
+    "time_limit_max": "24:00:00"
+  },
+  "calibration": {
+    "cell_updates_per_s_per_core": 1.5e6,
+    "particle_pref_per_cell": 2.0,
+    "imbalance": 1.25,
+    "field_bytes_per_cell": 120,
+    "guard_overhead": 1.08,
+    "dlb_headroom": 1.5,
+    "bytes_per_particle": 128,
+    "output_field_bytes_per_cell": 8,
+    "output_bytes_per_particle_var": 8,
+    "rss_floor_mib": 400,
+    "mem_fraction": 0.9,
+    "min_cells_per_rank": 131072
+  }
+}
