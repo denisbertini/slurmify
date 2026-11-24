@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regression tests for deck2submit (no external deps)."""
+"""Regression tests for slurmify (no external deps)."""
 
 import json
 import os
@@ -11,8 +11,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 
-from d2s.epoch import EpochDeck                                   # noqa: E402
-from d2s.model import plan                                         # noqa: E402
+from slurmify.epoch import EpochDeck                                   # noqa: E402
+from slurmify.model import plan                                         # noqa: E402
 
 FAILS = []
 
@@ -80,18 +80,18 @@ def main():
     with tempfile.TemporaryDirectory() as td:
         env = dict(os.environ, HOME=td)
         out = subprocess.run(
-            [sys.executable, os.path.join(ROOT, "deck2submit.py"),
+            [sys.executable, "-m", "slurmify",
              "plan", os.path.join(ROOT, "examples", "lwfa_bench.deck"),
              "--density-fill", "1.0", "--nodes", "2", "--tasks-per-node",
              "32", "--emit", os.path.join(td, "run.sh")],
-            capture_output=True, text=True, env=env)
+            capture_output=True, text=True, env=env, cwd=ROOT)
         check(out.returncode == 0, "forced plan exits 0")
         script = open(os.path.join(td, "run.sh")).read()
         check("--nodes=2" in script and "--tasks-per-node=32" in script,
               "forced sizing in sbatch")
-        check("deck2submit predictions" in script,
+        check("slurmify predictions" in script,
               "prediction header present")
-        reg = os.path.join(td, ".deck2submit", "registry.jsonl")
+        reg = os.path.join(td, ".slurmify", "registry.jsonl")
         check(os.path.exists(reg), "prediction recorded")
         # fake measurement, then calibrate
         rec = json.loads(open(reg).read().splitlines()[-1])
@@ -100,8 +100,8 @@ def main():
         with open(reg, "a") as fh:
             fh.write(json.dumps(rec2) + "\n")
         out = subprocess.run(
-            [sys.executable, os.path.join(ROOT, "deck2submit.py"),
-             "calibrate"], capture_output=True, text=True, env=env)
+            [sys.executable, "-m", "slurmify",
+             "calibrate"], capture_output=True, text=True, env=env, cwd=ROOT)
         check("cell_updates_per_s_per_core" in out.stdout,
               "calibrate proposes rate override")
 

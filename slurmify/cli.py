@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""deck2submit - deterministic deck -> submission advisor.
+"""slurmify - deterministic deck -> submission advisor.
 
-    deck2submit.py analyze DECK
-    deck2submit.py plan DECK [--machine machines/orion.json]
-                             [--density-fill 0.5] [--top 8]
-                             [--nodes N --tasks-per-node T]
-                             [--emit run.sh] [--job-name name]
-    deck2submit.py registry add --json '{"deck":...}'
-    deck2submit.py registry scrape --epoch-log LOG [--sacct-line ROW]
-                                   [--sdf2opmd-log LOG] [--json predict.json]
-    deck2submit.py registry report
-    deck2submit.py calibrate [--emit-json overrides.json]
+    python3 -m slurmify analyze DECK            (also: alias slurmify="python3 -m slurmify")
+    python3 -m slurmify plan DECK [--machine machines/orion.json]
+                         [--density-fill 0.5] [--top 8]
+                         [--nodes N --tasks-per-node T]
+                         [--emit run.sh] [--job-name name]
+    python3 -m slurmify registry add --json '{"deck":...}'
+    python3 -m slurmify registry scrape --epoch-log LOG [--sacct-line ROW]
+                               [--sdf2opmd-log LOG] [--json predict.json]
+    python3 -m slurmify registry report
+    python3 -m slurmify calibrate [--emit-json overrides.json]
 
 Front-ends: EPOCH .deck (WarpX/PiConGPU: contribute a parser producing
 the same WorkloadSpec).
@@ -23,14 +23,12 @@ import json
 import os
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from . import registry
+from .epoch import EpochDeck
+from .model import DEFAULT_CAL, fmt_dur, plan
+from .render import render
 
-from d2s import registry
-from d2s.epoch import EpochDeck
-from d2s.model import DEFAULT_CAL, fmt_dur, plan
-from d2s.render import render
-
-HERE = os.path.dirname(os.path.abspath(__file__))
+HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def load_machine(path: str) -> dict:
@@ -180,7 +178,7 @@ def cmd_calibrate(args) -> int:
 
 
 def main(argv=None) -> int:
-    ap = argparse.ArgumentParser(prog="deck2submit")
+    ap = argparse.ArgumentParser(prog="slurmify")
     sub = ap.add_subparsers(dest="command", required=True)
 
     p = sub.add_parser("analyze", help="deck -> workload spec")

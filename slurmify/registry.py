@@ -1,10 +1,10 @@
 """Run registry: every submission's predictions and (later) measurements
 in one JSONL file. Predictions without calibration are guesses; measured
-records let `deck2submit calibrate` propose better model constants.
+records let `slurmify calibrate` propose better model constants.
 
 Append with:
-    deck2submit.py registry add   --json '{...}'           # manual
-    deck2submit.py registry scrape --epoch-log out.log --sacct-line ...
+    slurmify.py registry add   --json '{...}'           # manual
+    slurmify.py registry scrape --epoch-log out.log --sacct-line ...
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ import os
 import re
 import time
 
-DEFAULT_PATH = os.path.expanduser("~/.deck2submit/registry.jsonl")
+DEFAULT_PATH = os.path.expanduser("~/.slurmify/registry.jsonl")
 
 _STEP_RE = re.compile(
     r"step\D+(\d+)\b.*?(?:elapsed|wall)[^0-9]*(\d+):(\d+):(\d+)", re.I)

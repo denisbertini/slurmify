@@ -1,4 +1,4 @@
-"""Backend-independent workload specification for deck2submit.
+"""Backend-independent workload specification for slurmify.
 
 Every deck front-end (EPOCH, WarpX, PiConGPU, ...) must reduce an input
 deck to this structure; the sizing/feasibility model then consumes only

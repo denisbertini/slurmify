@@ -1,4 +1,4 @@
-# deck2submit
+# slurmify
 
 **Deck in, good submission out.** Parse a PIC input deck, compute what
 the run *needs* (steps, memory, volume), enumerate submissions against a
@@ -15,14 +15,14 @@ deck --(front-end)--> WorkloadSpec --(model x machine profile)-->
 ## Quick start
 
 ```sh
-./deck2submit.py analyze examples/lwfa.deck --density-fill 0.5
-./deck2submit.py plan examples/lwfa.deck --density-fill 0.5 --emit run.sh
+python3 -m slurmify analyze examples/lwfa.deck --density-fill 0.5
+python3 -m slurmify plan examples/lwfa.deck --density-fill 0.5 --emit run.sh
 sbatch run.sh
 # after the run: feed reality back in
-./deck2submit.py registry scrape --epoch-log data/epoch.out.log \
+python3 -m slurmify registry scrape --epoch-log data/epoch.out.log \
     --sacct-line "$(sacct -n -X -P -j $JOBID --format=Elapsed,MaxRSS)" \
     --json <(python3 -c "...predict block from plan...")   # see CLI help
-./deck2submit.py calibrate        # proposes better constants from data
+python3 -m slurmify calibrate        # proposes better constants from data
 ./tests/run_tests.py              # regression suite
 ```
 
@@ -59,7 +59,7 @@ and the tool is telling you *your* machine's numbers.
 - machine profile ships with LRZ Orion + one user's submit pattern;
   copy the JSON for other sites
 - WarpX / PiConGPU front-ends: contribute parsers emitting
-  `d2s.spec.WorkloadSpec` (the rest of the pipeline is code-agnostic by
+  `slurmify.spec.WorkloadSpec` (the rest of the pipeline is code-agnostic by
   construction)
 
 ## What "optimal" means here

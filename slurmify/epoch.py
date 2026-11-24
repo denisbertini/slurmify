@@ -280,7 +280,7 @@ class EpochDeck:
         env = self.env
         nx, ny, nz = env.get("nx"), env.get("ny"), env.get("nz")
         if nx is None:
-            raise SystemExit("deck2submit: deck has no numeric nx in "
+            raise SystemExit("slurmify: deck has no numeric nx in "
                              "begin:control - cannot size it")
         ny = ny if ny is not None else 1
         nz = nz if nz is not None else 1

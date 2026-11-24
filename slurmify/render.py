@@ -19,7 +19,7 @@ TEMPLATE = """#!/bin/bash
 #SBATCH -o %j.out.log
 #SBATCH -e %j.err.log
 #
-# ================= deck2submit predictions (see README: registry to
+# ================= slurmify predictions (see README: registry to
 # ================= refine; measured values beat these comments)
 #   deck           : {deck}
 #   grid           : {nx} x {ny} x {nz}   dt = {dt:.3e} s -> {steps} steps
